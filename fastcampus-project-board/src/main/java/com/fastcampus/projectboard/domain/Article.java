@@ -27,15 +27,20 @@ import java.util.Set;
         @Index(columnList = "createdBy")
 })
 @Entity
-public class Article extends AuditingFields{
+public class Article extends AuditingFields {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter @Column(nullable = false) private String title;
-    @Setter @Column(nullable = false, length = 10000) private String content;
-    @Setter private String hashtag;
+    @Setter
+    @Column(nullable = false)
+    private String title;
+    @Setter
+    @Column(nullable = false, length = 10000)
+    private String content;
+    @Setter
+    private String hashtag;
 
     @OrderBy("id")
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
@@ -47,7 +52,8 @@ public class Article extends AuditingFields{
 //    @LastModifiedDate @Column(nullable = false) private LocalDateTime modifiedAt;
 //    @LastModifiedBy @Column(nullable = false, length = 100) private String modifiedBy;
 
-    protected Article() {}
+    protected Article() {
+    }
 
     private Article(String title, String content, String hashtag) {
         this.title = title;
