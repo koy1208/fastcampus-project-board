@@ -11,6 +11,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+
 import java.util.Objects;
 
 @Getter
@@ -21,16 +22,17 @@ import java.util.Objects;
         @Index(columnList = "createdBy")
 })
 @Entity
-public class ArticleComment extends AuditingFields{
-
+public class ArticleComment extends AuditingFields {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter @ManyToOne(optional = false) private Article article;
-    @Setter @Column(nullable = false, length = 500) private String content;
-
-
+    @Setter
+    @ManyToOne(optional = false)
+    private Article article;
+    @Setter
+    @Column(nullable = false, length = 500)
+    private String content;
 
 
 //    @CreatedDate
