@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymleaf.org">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>게시판 페이지</title>
@@ -7,7 +7,9 @@
 
 <body>
 
-    <header th:replace="~{header :: header}"></header>
+    <header>
+        <hr>
+    </header>
 
     <main>
         <form>
@@ -69,7 +71,9 @@
         </nav>
     </main>
 
-<footer th:replace="footer :: footer"></footer>
+<footer>
+    <hr>
+</footer>
 
 </body>
 </html>
