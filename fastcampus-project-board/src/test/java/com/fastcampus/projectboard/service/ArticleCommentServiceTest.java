@@ -53,7 +53,7 @@ class ArticleCommentServiceTest {
 
         //Then
         assertThat(articleComments).isNotNull();
-        then(articleRepository).should().findById(articleId);
+        then(articleCommentRepository).should().findByArticle_Id(articleId);
     }
 
     @DisplayName("댓글 정보를 입력하면, 댓글을 저장한다.")
