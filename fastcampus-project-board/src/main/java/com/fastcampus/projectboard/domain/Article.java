@@ -35,6 +35,7 @@ public class Article extends AuditingFields {
 
     @Setter
     @ManyToOne(optional = true)
+    @JoinColumn(name = "userId")
     private UserAccount userAccount;
 
     @Setter

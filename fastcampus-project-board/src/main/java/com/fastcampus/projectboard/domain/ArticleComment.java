@@ -29,6 +29,7 @@ public class ArticleComment extends AuditingFields {
     private Long id;
     @Setter
     @ManyToOne(optional = false)
+    @JoinColumn(name = "userId")
     private UserAccount userAccount;
 
 
