@@ -3,7 +3,7 @@ package com.fastcampus.projectboard.service;
 import com.fastcampus.projectboard.domain.UserAccount;
 import com.fastcampus.projectboard.dto.ArticleDto;
 import com.fastcampus.projectboard.domain.Article;
-import com.fastcampus.projectboard.domain.type.SearchType;
+import com.fastcampus.projectboard.domain.constant.SearchType;
 import com.fastcampus.projectboard.dto.ArticleWithCommentsDto;
 import com.fastcampus.projectboard.dto.UserAccountDto;
 import com.fastcampus.projectboard.repository.ArticleRepository;
@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -125,7 +126,7 @@ class ArticleServiceTest {
         given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
 
         // When
-        ArticleWithCommentsDto dto = sut.getArticle(articleId);
+        ArticleWithCommentsDto dto = sut.getArticleWithComments(articleId);
 
         // Then
         assertThat(dto)
@@ -175,7 +176,7 @@ class ArticleServiceTest {
         given(articleRepository.getReferenceById(dto.id())).willReturn(article);
 
         //When
-        sut.updateArticle(dto);
+        sut.updateArticle(dto.id(), dto);
 
         //Then
         assertThat(article)
@@ -193,7 +194,7 @@ class ArticleServiceTest {
         given(articleRepository.getReferenceById(dto.id())).willThrow(EntityNotFoundException.class);
 
         // When
-        sut.updateArticle(dto);
+        sut.updateArticle(dto.id(), dto);
 
         // Then
         then(articleRepository).should().getReferenceById(dto.id());
@@ -241,12 +242,15 @@ class ArticleServiceTest {
     }
 
     private Article createArticle() {
-        return Article.of(
+        Article article = Article.of(
                 createUserAccount(),
                 "title",
                 "content",
                 "#java"
         );
+        ReflectionTestUtils.setField(article, "id", 1L);
+
+        return article;
     }
 
     private ArticleDto createArticleDto() {
