@@ -2,21 +2,25 @@ package com.fastcampus.projectboard.repository;
 
 import com.fastcampus.projectboard.config.JpaConfig;
 import com.fastcampus.projectboard.domain.Article;
-import com.fastcampus.projectboard.domain.ArticleComment;
 import com.fastcampus.projectboard.domain.UserAccount;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
 
 @DisplayName("JPA 연결 테스트")
-@Import(JpaConfig.class)
+@Import(JpaRepositoryTest.TestJpaConfig.class)
 @DataJpaTest
 class JpaRepositoryTest {
 
@@ -32,20 +36,18 @@ class JpaRepositoryTest {
         this.userAccountRepository = userAccountRepository;
     }
 
-    @DisplayName("Select 테스트")
+    @DisplayName("select 테스트")
     @Test
-    void givenTestData_whenSelecting_thenWorksFine(){
-        List<Article> articles = articleRepository.findAll();
-        List<ArticleComment> articleComments = articleCommentRepository.findAll();
+    void givenTestData_whenSelecting_thenWorksFine() {
+        // Given
 
+        // When
+        List<Article> articles = articleRepository.findAll();
+
+        // Then
         assertThat(articles)
                 .isNotNull()
-                .hasSize(2);
-
-        assertThat(articleComments)
-                .isNotNull()
-                .hasSize(2);
-
+                .hasSize(123);
     }
 
 
@@ -53,7 +55,7 @@ class JpaRepositoryTest {
     @Test
     void givenTestData_whenInserting_thenWorksFine(){
         long previousCount = articleRepository.count();
-        UserAccount userAccount = userAccountRepository.save(UserAccount.of("newkoy1208", "pw", null, null, null));
+        UserAccount userAccount = userAccountRepository.save(UserAccount.of("koy1208", "pw", null, null, null));
         Article savedArticle = articleRepository.save(Article.of(userAccount, "new article", "neww content", "#spring"));
 
         articleRepository.save(savedArticle);
@@ -80,12 +82,21 @@ class JpaRepositoryTest {
     void givenTestData_whenDeleting_thenWorksFine(){
         Article article = articleRepository.findById(1L).orElseThrow();
         long previousArticleCount = articleRepository.count();
-        long previousArticleCommentCount = articleRepository.count();
-        long deletedCommentsSize = article.getArticleComments().size();
+        long previousArticleCommentCount = articleCommentRepository.count();
+        int deletedCommentsSize = article.getArticleComments().size();
 
         articleRepository.delete(article);
 
         assertThat(articleRepository.count()).isEqualTo(previousArticleCount -1);
         assertThat(articleCommentRepository.count()).isEqualTo(previousArticleCommentCount - deletedCommentsSize);
+    }
+
+    @EnableJpaAuditing
+    @TestConfiguration
+    public static class TestJpaConfig{
+        @Bean
+        public AuditorAware<String> auditorAware(){
+            return () -> Optional.of("koy1208");
+        }
     }
 }

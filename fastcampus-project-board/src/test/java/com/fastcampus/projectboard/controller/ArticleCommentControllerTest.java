@@ -1,8 +1,11 @@
 package com.fastcampus.projectboard.controller;
 
 import com.fastcampus.projectboard.config.SecurityConfig;
+import com.fastcampus.projectboard.config.TestSecurityConfig;
 import com.fastcampus.projectboard.dto.ArticleCommentDto;
 import com.fastcampus.projectboard.dto.request.ArticleCommentRequest;
+import com.fastcampus.projectboard.repository.ArticleRepository;
+import com.fastcampus.projectboard.repository.UserAccountRepository;
 import com.fastcampus.projectboard.service.ArticleCommentService;
 import com.fastcampus.projectboard.utili.FormDataEncoder;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +16,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.swing.text.View;
@@ -27,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @DisplayName("View 컨트롤러 - 댓글")
-@Import({SecurityConfig.class, FormDataEncoder.class})
+@Import({TestSecurityConfig.class, FormDataEncoder.class})
 @WebMvcTest(ArticleCommentController.class)
 class ArticleCommentControllerTest {
 
@@ -44,6 +50,11 @@ class ArticleCommentControllerTest {
         this.formDataEncoder = formDataEncoder;
     }
 
+    @WithUserDetails(
+            value="testAccount",
+            userDetailsServiceBeanName = "userDetailsService",
+            setupBefore = TestExecutionEvent.TEST_EXECUTION
+    )
     @DisplayName("[View][POST] 댓글 등록 - 정상 호출")
     @Test
     void givenArticleCommentInfo_whenRequesting_thenSaveNewArticleComment() throws Exception {
@@ -66,13 +77,21 @@ class ArticleCommentControllerTest {
     }
 
 
+    @WithUserDetails(
+            value="testAccount",
+            userDetailsServiceBeanName = "userDetailsService",
+            setupBefore = TestExecutionEvent.TEST_EXECUTION
+    )
     @DisplayName("[View][POST] 댓글 삭제 - 정상 호출")
     @Test
     void givenArticleCommentDelete_whenRequesting_thenDeleteArticleComment() throws Exception{
         // Given
         long articleId = 1L;
         long commentId = 1L;
-        willDoNothing().given(articleCommentService).deleteArticleComment(commentId);
+        String userId = "testAccount";
+
+
+        willDoNothing().given(articleCommentService).deleteArticleComment(commentId, userId);
 
         // When & Then
         mvc.perform(post("/comments/" + commentId +"/delete")
@@ -84,6 +103,6 @@ class ArticleCommentControllerTest {
                 .andExpect(view().name("redirect:/articles/" + articleId))
                 .andExpect(redirectedUrl("/articles/" + articleId));
 
-        then(articleCommentService).should().deleteArticleComment(commentId);
+        then(articleCommentService).should().deleteArticleComment(commentId, userId);
     }
 }
