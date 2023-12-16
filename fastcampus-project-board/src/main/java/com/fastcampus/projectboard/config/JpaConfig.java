@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @EnableJpaAuditing
 @Configuration
-public class JpaConfig {
+public class JpaConfig implements AuditorAware<String>{/*
     @Bean
     public AuditorAware<String> auditorAware() {
         Authentication authentication = SecurityContextHolder
@@ -28,5 +28,19 @@ public class JpaConfig {
 
         return () -> Optional.ofNullable(principal.getUsername());
     }
+*/
+    @Override
+    public Optional<String> getCurrentAuditor() {
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
 
+        if(authentication == null || !authentication.isAuthenticated()){
+            return null;
+        }
+
+        BoardPrincipal principal = (BoardPrincipal)authentication.getPrincipal();
+
+        return Optional.ofNullable(principal.getUsername());
+    }
 }
